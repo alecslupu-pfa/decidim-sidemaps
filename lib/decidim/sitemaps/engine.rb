@@ -30,6 +30,12 @@ module Decidim
             participatory_space.scopes = Decidim::Sitemaps.conferences.fetch(:scopes, [:public_spaces])
           end
         end
+        if Decidim.module_installed?(:initiatives)
+          Decidim::Sitemaps.register_participatory_space(:initiatives) do |participatory_space|
+            participatory_space.route = :initiative_path
+            participatory_space.scopes = Decidim::Sitemaps.initiatives.fetch(:scopes, [:public_spaces])
+          end
+        end
       end
     end
   end
