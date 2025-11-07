@@ -37,7 +37,33 @@ module Decidim
                         priority: settings.fetch(:priority, 0.5),
                         lastmod: process.updated_at, alternates: alternate_process_routes(registry, process)
 
-            # add_component_to_sitemap process: process
+            add_component_to_sitemap process:
+          end
+        end
+      end
+
+      def add_component_to_sitemap(process:)
+        return unless process.respond_to?(:components)
+
+        process.components.published.each do |component|
+          registry = Decidim::Sitemaps.find_component_manifest(component.manifest.name)
+
+          next if registry.blank?
+
+          settings = Decidim::Sitemaps.send(component.manifest.name)
+          scopes = settings.fetch(:scopes, [:published])
+
+          next unless settings.fetch(:enabled, true)
+
+          # Chain the scope methods by using reduce
+          collection = scopes.reduce(registry.model_class) { |relation, scope| relation.send(scope) }
+
+          collection.where(component:).find_each(batch_size:) do |resource|
+            sitemap.add registry.resource_route(resource),
+                        changefreq: settings.fetch(:changefreq, "daily"),
+                        priority: settings.fetch(:priority, 0.5),
+                        lastmod: resource.updated_at,
+                        alternates: alternates_resource_routes(registry, resource)
           end
         end
       end
@@ -75,6 +101,15 @@ module Decidim
         alternate_locales.map do |locale|
           {
             href: registry.engine_route(process, params: { locale: }),
+            lang: locale
+          }
+        end
+      end
+
+      def alternates_resource_routes(registry, resource)
+        alternate_locales.map do |locale|
+          {
+            href: registry.resource_route(resource, params: { locale: }),
             lang: locale
           }
         end
