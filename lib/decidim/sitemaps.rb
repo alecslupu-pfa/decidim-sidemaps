@@ -12,6 +12,7 @@ module Decidim
     autoload :Generator, "decidim/sitemaps/generator"
     autoload :ManifestRegistry, "decidim/sitemaps/manifest_registry"
     autoload :ParticipatorySpaceManifest, "decidim/sitemaps/participatory_space_manifest"
+    autoload :ComponentManifest, "decidim/sitemaps/component_manifest"
 
     config_accessor :batch_size do
       100
