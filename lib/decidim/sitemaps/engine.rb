@@ -16,6 +16,13 @@ module Decidim
             participatory_space.scopes = Decidim::Sitemaps.participatory_processes.fetch(:scopes, [:public_spaces])
           end
         end
+
+        if Decidim.module_installed?(:assemblies)
+          Decidim::Sitemaps.register_participatory_space(:assemblies) do |participatory_space|
+            participatory_space.route = :assembly_path
+            participatory_space.scopes = Decidim::Sitemaps.assemblies.fetch(:scopes, [:public_spaces])
+          end
+        end
       end
     end
   end
