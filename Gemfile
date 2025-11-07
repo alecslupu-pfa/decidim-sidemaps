@@ -19,5 +19,6 @@ group :development, :test do
 
   gem "decidim-assemblies"
   gem "decidim-conferences"
+  gem "decidim-initiatives"
   gem "decidim-participatory_processes"
 end
