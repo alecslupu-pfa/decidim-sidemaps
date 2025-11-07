@@ -4,7 +4,7 @@ require "spec_helper"
 module Decidim
   module Sitemaps
     describe Utilities do
-      let(:config_file) { SitemapGenerator.app.root.join("config/decidim_sitemap.rb") }
+      let(:config_file) { SitemapGenerator.app.root.join("config/sitemap.rb") }
       let(:logger_double) { instance_double(ActiveSupport::Logger) }
 
       before do
@@ -23,28 +23,30 @@ module Decidim
 
       describe "when is verbose" do
         let(:verbose) { true }
+
         it "outputs information on config file being copied" do
-          expect(logger_double).to receive(:info).with("created: config/decidim_sitemap.rb")
+          expect(logger_double).to receive(:info).with("created: config/sitemap.rb")
           Decidim::Sitemaps::Utilities.install_sitemap_rb(verbose:)
         end
 
         it "outputs information on config file already being present" do
           Decidim::Sitemaps::Utilities.install_sitemap_rb(verbose:)
-          expect(logger_double).to receive(:info).with("already exists: config/decidim_sitemap.rb, file not copied")
+          expect(logger_double).to receive(:info).with("already exists: config/sitemap.rb, file not copied")
           Decidim::Sitemaps::Utilities.install_sitemap_rb(verbose:)
         end
       end
 
       describe "when is not verbose" do
         let(:verbose) { false }
+
         it "outputs information on config file being copied" do
-          expect(logger_double).not_to receive(:info).with("created: config/decidim_sitemap.rb")
+          expect(logger_double).not_to receive(:info).with("created: config/sitemap.rb")
           Decidim::Sitemaps::Utilities.install_sitemap_rb(verbose:)
         end
 
         it "outputs information on config file already being present" do
           Decidim::Sitemaps::Utilities.install_sitemap_rb(verbose:)
-          expect(logger_double).not_to receive(:info).with("already exists: config/decidim_sitemap.rb, file not copied")
+          expect(logger_double).not_to receive(:info).with("already exists: config/sitemap.rb, file not copied")
           Decidim::Sitemaps::Utilities.install_sitemap_rb(verbose:)
         end
       end

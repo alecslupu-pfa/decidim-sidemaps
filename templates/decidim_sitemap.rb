@@ -9,6 +9,6 @@ Decidim::Organization.find_each do |organization|
   SitemapGenerator::Sitemap.compress = false
 
   SitemapGenerator::Sitemap.create do
-    Decidim::Sitemaps::Generator.new(organization: organization, sitemap: self).generate_sitemap
+    Decidim::Sitemaps::Generator.new(organization:, sitemap: self).generate_sitemap
   end
 end
