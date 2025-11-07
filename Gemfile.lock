@@ -193,6 +193,11 @@ GEM
     decidim-comments (0.29.1)
       decidim-core (= 0.29.1)
       redcarpet (~> 3.5, >= 3.5.1)
+    decidim-conferences (0.29.1)
+      decidim-core (= 0.29.1)
+      decidim-meetings (= 0.29.1)
+      wicked_pdf (~> 2.7)
+      wkhtmltopdf-binary (= 0.12.6.6)
     decidim-core (0.29.1)
       active_link_to (~> 1.0)
       acts_as_list (~> 1.0)
@@ -803,6 +808,8 @@ PLATFORMS
 DEPENDENCIES
   bootsnap (~> 1.3)
   decidim (= 0.29.1)
+  decidim-assemblies
+  decidim-conferences
   decidim-dev (= 0.29.1)
   decidim-participatory_processes
   decidim-sitemaps!

@@ -29,6 +29,10 @@ module Decidim
       { enabled: true, changefreq: "daily", priority: 0.5, scopes: [:public_spaces] }
     end
 
+    config_accessor :conferences do
+      { enabled: true, changefreq: "daily", priority: 0.5, scopes: [:public_spaces] }
+    end
+
     def self.register_participatory_space(name, &)
       participatory_space_registry.register(name, &)
     end
