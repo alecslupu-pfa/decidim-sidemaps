@@ -17,5 +17,7 @@ group :development, :test do
   gem "rubocop-performance"
   gem "simplecov", require: false
 
+  gem "decidim-assemblies"
+  gem "decidim-conferences"
   gem "decidim-participatory_processes"
 end
