@@ -11,12 +11,38 @@ module Decidim
       end
 
       def generate_sitemap
-        add_pages_to_sitemap
+        add_pages
+        add_spaces
       end
 
       protected
 
-      def add_pages_to_sitemap
+      def add_spaces
+        Decidim.participatory_space_manifests.flat_map do |manifest|
+          registry = Decidim::Sitemaps.participatory_space_registry.find(manifest.name)
+
+          next if registry.blank?
+
+          settings = Decidim::Sitemaps.send(manifest.name)
+          scopes = settings.fetch(:scopes, [:public_spaces])
+
+          next unless settings.fetch(:enabled, true)
+
+          # Chain the scope methods by using reduce
+          collection = scopes.reduce(registry.model_class) { |relation, scope| relation.send(scope) }
+
+          collection.each do |process|
+            sitemap.add registry.engine_route(process),
+                        changefreq: settings.fetch(:changefreq, "daily"),
+                        priority: settings.fetch(:priority, 0.5),
+                        lastmod: process.updated_at, alternates: alternate_process_routes(registry, process)
+
+            # add_component_to_sitemap process: process
+          end
+        end
+      end
+
+      def add_pages
         return [] unless Decidim::Sitemaps.static_pages.fetch(:enabled, true)
 
         organization.static_pages_accessible_for(nil).find_each(batch_size:) do |page|
@@ -40,6 +66,15 @@ module Decidim
         alternate_locales.map do |locale|
           {
             href: Decidim::Core::Engine.routes.url_helpers.page_url(page, locale:, host: organization.host),
+            lang: locale
+          }
+        end
+      end
+
+      def alternate_process_routes(registry, process)
+        alternate_locales.map do |locale|
+          {
+            href: registry.engine_route(process, params: { locale: }),
             lang: locale
           }
         end
