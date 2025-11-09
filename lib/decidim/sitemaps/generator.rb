@@ -17,6 +17,9 @@ module Decidim
 
       protected
 
+      delegate :batch_size, to: Decidim::Sitemaps
+      delegate :host, to: :organization
+
       def add_spaces
         Decidim.participatory_space_manifests.flat_map do |manifest|
           registry = Decidim::Sitemaps.participatory_space_registry.find(manifest.name)
@@ -59,7 +62,7 @@ module Decidim
           collection = scopes.reduce(registry.model_class) { |relation, scope| relation.send(scope) }
 
           collection.where(component:).find_each(batch_size:) do |resource|
-            sitemap.add registry.resource_route(resource),
+            sitemap.add registry.resource_route(resource, host:),
                         changefreq: settings.fetch(:changefreq, "daily"),
                         priority: settings.fetch(:priority, 0.5),
                         lastmod: resource.updated_at,
@@ -79,8 +82,6 @@ module Decidim
                       alternates: alternate_pages(page)
         end
       end
-
-      delegate :batch_size, to: Decidim::Sitemaps
 
       def alternate_locales
         organization.available_locales.excluding(organization.default_locale)
@@ -109,7 +110,7 @@ module Decidim
       def alternates_resource_routes(registry, resource)
         alternate_locales.map do |locale|
           {
-            href: registry.resource_route(resource, params: { locale: }),
+            href: registry.resource_route(resource, host:, params: { locale: }),
             lang: locale
           }
         end

@@ -11,8 +11,8 @@ module Decidim
       attribute :scopes, [Symbol], default: [:all]
       validates :name, presence: true
 
-      def resource_route(resource, params: {})
-        ResourceLocatorPresenter.new(resource).path(**params)
+      def resource_route(resource, host:, params: {})
+        ResourceLocatorPresenter.new(resource).url(params.merge(host:))
       end
 
       def model_class

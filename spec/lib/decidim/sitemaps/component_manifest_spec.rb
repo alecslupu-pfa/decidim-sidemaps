@@ -32,8 +32,9 @@ module Decidim
 
       describe "resource_route" do
         let(:resource) { create(name) }
+        let(:organization) { resource.participatory_space.organization }
 
-        it { expect(subject.resource_route(resource)).to eq("/processes/#{resource.participatory_space.slug}/f/#{resource.component.id}/dummy_resources/#{resource.id}") }
+        it { expect(subject.resource_route(resource, host: organization.host)).to eq("http://#{organization.host}:#{Capybara.server_port}/processes/#{resource.participatory_space.slug}/f/#{resource.component.id}/dummy_resources/#{resource.id}") }
       end
 
       describe "model_class" do

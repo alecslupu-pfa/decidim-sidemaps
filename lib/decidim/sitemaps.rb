@@ -38,12 +38,29 @@ module Decidim
       { enabled: true, changefreq: "daily", priority: 0.5, scopes: [:public_spaces] }
     end
 
+    config_accessor :meetings do
+      { enabled: true, changefreq: "daily", priority: 0.5, scopes: [:published, :not_hidden, :not_withdrawn, :visible] }
+    end
+
     def self.register_participatory_space(name, &)
       participatory_space_registry.register(name, &)
     end
 
     def self.participatory_space_registry
       @participatory_space_registry ||= Decidim::Sitemaps::ManifestRegistry.new(:participatory_spaces)
+    end
+
+    def self.find_component_manifest(name)
+      component_registry.find(name.to_sym)
+    end
+
+    # Public: Stores the registry of components
+    def self.component_registry
+      @component_registry ||= Decidim::Sitemaps::ManifestRegistry.new(:components)
+    end
+
+    def self.register_component(name, &)
+      component_registry.register(name, &)
     end
   end
 end
