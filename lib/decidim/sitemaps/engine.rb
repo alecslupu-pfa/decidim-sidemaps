@@ -39,6 +39,12 @@ module Decidim
       end
 
       initializer "decidim_sitemaps.register_resource" do |_app|
+        if Decidim.module_installed?(:blogs)
+          Decidim::Sitemaps.register_component(:blogs) do |component|
+            component.model_class_name = "Decidim::Blogs::Post"
+            component.scopes = Decidim::Sitemaps.blogs.fetch(:scopes, [:published, :not_hidden])
+          end
+        end
         if Decidim.module_installed?(:meetings)
           Decidim::Sitemaps.register_component(:meetings) do |component|
             component.model_class_name = "Decidim::Meetings::Meeting"

@@ -38,6 +38,10 @@ module Decidim
       { enabled: true, changefreq: "daily", priority: 0.5, scopes: [:public_spaces] }
     end
 
+    config_accessor :blogs do
+      { enabled: true, changefreq: "daily", priority: 0.5, scopes: [:published] }
+    end
+
     config_accessor :meetings do
       { enabled: true, changefreq: "daily", priority: 0.5, scopes: [:published, :not_hidden, :not_withdrawn, :visible] }
     end
