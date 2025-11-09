@@ -42,6 +42,10 @@ module Decidim
       { enabled: true, changefreq: "daily", priority: 0.5, scopes: [:published, :not_hidden, :not_withdrawn, :visible] }
     end
 
+    config_accessor :proposals do
+      { enabled: true, changefreq: "daily", priority: 0.5, scopes: [:published, :not_hidden, :not_withdrawn] }
+    end
+
     def self.register_participatory_space(name, &)
       participatory_space_registry.register(name, &)
     end

@@ -6,7 +6,7 @@ describe "MeetingsSitemaps" do
   let(:sitemap_options) { { include_root: false, verbose: false, compress: false, default_host: "https://#{organization.host}" } }
   let(:organization) { create(:organization, create_static_pages: false) }
   let!(:participatory_space) { create(:participatory_process, :published, organization:) }
-  let!(:component) { create(:meeting_component, :published, participatory_space:) }
+  let!(:component) { create(:proposal_component, :published, participatory_space:) }
 
   let(:sitemap) do
     SitemapGenerator::Sitemap.create(**sitemap_options) do
@@ -26,53 +26,47 @@ describe "MeetingsSitemaps" do
   end
 
   context "when the resource is created but not published" do
-    let!(:meeting) { create(:meeting, component:) }
+    let!(:resource) { create(:proposal, :unpublished, component:) }
 
     it { expect(sitemap.link_count).to eq(1) }
   end
 
   context "when resource is published" do
-    let!(:meeting) { create(:meeting, :published, component:) }
+    let!(:resource) { create(:proposal, :published, component:) }
 
     it { expect(sitemap.link_count).to eq(2) }
   end
 
   context "when resource is published but withdrawn" do
-    let!(:meeting) { create(:meeting, :published, :withdrawn, component:) }
-
-    it { expect(sitemap.link_count).to eq(1) }
-  end
-
-  context "when resource is published but private" do
-    let!(:meeting) { create(:meeting, :published, private_meeting: true, transparent: false, component:) }
+    let!(:resource) { create(:proposal, :published, :withdrawn, component:) }
 
     it { expect(sitemap.link_count).to eq(1) }
   end
 
   context "when resource is published but moderated" do
-    let!(:meeting) { create(:meeting, :published, :moderated, component:) }
+    let!(:meeting) { create(:proposal, :published, :moderated, component:) }
 
     it { expect(sitemap.link_count).to eq(1) }
   end
 
   context "when resource has a custom scope" do
     around do |example|
-      scopes = Decidim::Sitemaps.meetings[:scopes]
-      Decidim::Sitemaps.meetings[:scopes] = [:published, :not_hidden, :not_withdrawn, :visible, :in_person]
+      scopes = Decidim::Sitemaps.proposals[:scopes]
+      Decidim::Sitemaps.proposals[:scopes] = [:published, :not_hidden, :not_withdrawn, :accepted]
 
       example.run
 
-      Decidim::Sitemaps.meetings[:scopes] = scopes
+      Decidim::Sitemaps.proposals[:scopes] = scopes
     end
 
     context "and there is no match" do
-      let!(:meeting) { create(:meeting, :published, :online, component:) }
+      let!(:meeting) { create(:proposal, :published, :rejected, component:) }
 
       it { expect(sitemap.link_count).to eq(1) }
     end
 
     context "and there is a match" do
-      let!(:meeting) { create(:meeting, :published, :in_person, component:) }
+      let!(:meeting) { create(:proposal, :published, :accepted, component:) }
 
       it { expect(sitemap.link_count).to eq(2) }
     end
