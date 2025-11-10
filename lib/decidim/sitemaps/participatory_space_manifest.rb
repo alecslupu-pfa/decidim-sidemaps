@@ -11,14 +11,13 @@ module Decidim
       attribute :scopes, [Symbol], default: [:all]
 
       validates :name, presence: true
-      validates :route, presence: true
 
       def model_class
         scopes.inject(manifest.model_class_name.constantize) { |ar, scope| ar.send(scope) }
       end
 
-      def engine_route(resource, params: {})
-        manifest.context.engine.routes.url_helpers.send(route, resource, **params)
+      def resource_route(resource, host:, params: {})
+        ResourceLocatorPresenter.new(resource).url(params.merge(host:))
       end
 
       private

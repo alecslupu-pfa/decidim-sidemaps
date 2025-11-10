@@ -22,62 +22,62 @@ module Decidim
 
       def add_spaces
         Decidim.participatory_space_manifests.flat_map do |manifest|
-          registry = Decidim::Sitemaps.participatory_space_registry.find(manifest.name)
+          manifest_name = manifest.name
+          registry = Decidim::Sitemaps.participatory_space_registry.find(manifest_name)
 
-          next if registry.blank?
-
-          settings = Decidim::Sitemaps.send(manifest.name)
-          scopes = settings.fetch(:scopes, [:public_spaces])
-
-          next unless settings.fetch(:enabled, true)
-
-          # Chain the scope methods by using reduce
-          collection = scopes.reduce(registry.model_class) { |relation, scope| relation.send(scope) }
-
-          collection.each do |process|
-            sitemap.add registry.engine_route(process),
-                        changefreq: settings.fetch(:changefreq, "daily"),
-                        priority: settings.fetch(:priority, 0.5),
-                        lastmod: process.updated_at, alternates: alternate_process_routes(registry, process)
-
-            add_component_to_sitemap process:
-          end
+          add_resource_to_sitemap registry:,
+                                  manifest_name:,
+                                  default_scope: [:public_spaces],
+                                  callback: :add_component_to_sitemap
         end
       end
 
-      def add_component_to_sitemap(process:)
+      def add_component_to_sitemap(process)
         return unless process.respond_to?(:components)
 
         process.components.published.each do |component|
-          registry = Decidim::Sitemaps.find_component_manifest(component.manifest.name)
+          manifest_name = component.manifest.name
+          registry = Decidim::Sitemaps.find_component_manifest(manifest_name)
 
-          next if registry.blank?
+          add_resource_to_sitemap registry:,
+                                  manifest_name:,
+                                  default_scope: [:published],
+                                  constraints: { component: }
+        end
+      end
 
-          settings = Decidim::Sitemaps.send(component.manifest.name)
-          scopes = settings.fetch(:scopes, [:published])
+      def add_resource_to_sitemap(registry:, manifest_name:, default_scope:, callback: nil, constraints: {})
+        return if registry.blank?
 
-          next unless settings.fetch(:enabled, true)
+        settings = Decidim::Sitemaps.send(manifest_name)
+        scopes = settings.fetch(:scopes, default_scope)
 
-          # Chain the scope methods by using reduce
-          collection = scopes.reduce(registry.model_class) { |relation, scope| relation.send(scope) }
+        return unless settings.fetch(:enabled, true)
 
-          collection.where(component:).find_each(batch_size:) do |resource|
-            sitemap.add registry.resource_route(resource, host:),
-                        changefreq: settings.fetch(:changefreq, "daily"),
-                        priority: settings.fetch(:priority, 0.5),
-                        lastmod: resource.updated_at,
-                        alternates: alternates_resource_routes(registry, resource)
-          end
+        # Chain the scope methods by using reduce
+        collection = scopes.reduce(registry.model_class) { |relation, scope| relation.send(scope) }
+        collection = collection.where(**constraints) if constraints.present?
+
+        collection.find_each(batch_size:) do |resource|
+          sitemap.add registry.resource_route(resource, host:),
+                      changefreq: settings.fetch(:changefreq, "daily"),
+                      priority: settings.fetch(:priority, 0.5),
+                      lastmod: resource.updated_at,
+                      alternates: alternates_resource_routes(registry, resource)
+
+          send(callback, resource) if callback.present?
         end
       end
 
       def add_pages
-        return [] unless Decidim::Sitemaps.static_pages.fetch(:enabled, true)
+        manifest_name = :static_pages
+        settings = Decidim::Sitemaps.send(manifest_name)
+        return [] unless settings.fetch(:enabled, true)
 
         organization.static_pages_accessible_for(nil).find_each(batch_size:) do |page|
           sitemap.add Decidim::Core::Engine.routes.url_helpers.page_url(page, host: organization.host),
-                      changefreq: Decidim::Sitemaps.static_pages.fetch(:changefreq, "daily"),
-                      priority: Decidim::Sitemaps.static_pages.fetch(:priority, 0.5),
+                      changefreq: settings.fetch(:changefreq, "daily"),
+                      priority: settings.fetch(:priority, 0.5),
                       lastmod: page.updated_at,
                       alternates: alternate_pages(page)
         end
@@ -92,16 +92,7 @@ module Decidim
       def alternate_pages(page)
         alternate_locales.map do |locale|
           {
-            href: Decidim::Core::Engine.routes.url_helpers.page_url(page, locale:, host: organization.host),
-            lang: locale
-          }
-        end
-      end
-
-      def alternate_process_routes(registry, process)
-        alternate_locales.map do |locale|
-          {
-            href: registry.engine_route(process, params: { locale: }),
+            href: Decidim::Core::Engine.routes.url_helpers.page_url(page, locale:, host:),
             lang: locale
           }
         end
