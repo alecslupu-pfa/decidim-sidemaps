@@ -12,27 +12,23 @@ module Decidim
       initializer "decidim_sitemaps.register_spaces" do
         if Decidim.module_installed?(:participatory_processes)
           Decidim::Sitemaps.register_participatory_space(:participatory_processes) do |participatory_space|
-            participatory_space.route = :participatory_process_path
             participatory_space.scopes = Decidim::Sitemaps.participatory_processes.fetch(:scopes, [:public_spaces])
           end
         end
 
         if Decidim.module_installed?(:assemblies)
           Decidim::Sitemaps.register_participatory_space(:assemblies) do |participatory_space|
-            participatory_space.route = :assembly_path
             participatory_space.scopes = Decidim::Sitemaps.assemblies.fetch(:scopes, [:public_spaces])
           end
         end
 
         if Decidim.module_installed?(:conferences)
           Decidim::Sitemaps.register_participatory_space(:conferences) do |participatory_space|
-            participatory_space.route = :conference_path
             participatory_space.scopes = Decidim::Sitemaps.conferences.fetch(:scopes, [:public_spaces])
           end
         end
         if Decidim.module_installed?(:initiatives)
           Decidim::Sitemaps.register_participatory_space(:initiatives) do |participatory_space|
-            participatory_space.route = :initiative_path
             participatory_space.scopes = Decidim::Sitemaps.initiatives.fetch(:scopes, [:public_spaces])
           end
         end

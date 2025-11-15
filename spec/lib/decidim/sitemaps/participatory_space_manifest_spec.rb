@@ -23,12 +23,6 @@ module Decidim
         it { is_expected.to be_invalid }
       end
 
-      context "when no route is set" do
-        let(:route) { nil }
-
-        it { is_expected.to be_invalid }
-      end
-
       describe "model_class" do
         it "receives the scopes" do
           scopes.each do |scope|
