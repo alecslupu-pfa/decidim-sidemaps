@@ -39,7 +39,7 @@ module Decidim
     end
 
     config_accessor :blogs do
-      { enabled: true, changefreq: "daily", priority: 0.5, scopes: [:published] }
+      { enabled: true, changefreq: "daily", priority: 0.5, scopes: [:published, :not_hidden] }
     end
 
     config_accessor :meetings do
@@ -48,6 +48,10 @@ module Decidim
 
     config_accessor :proposals do
       { enabled: true, changefreq: "daily", priority: 0.5, scopes: [:published, :not_hidden, :not_withdrawn] }
+    end
+
+    config_accessor :debates do
+      { enabled: true, changefreq: "daily", priority: 0.5, scopes: [:open, :not_hidden] }
     end
 
     def self.register_participatory_space(name, &)

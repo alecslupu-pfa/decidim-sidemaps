@@ -53,6 +53,13 @@ module Decidim
             component.scopes = Decidim::Sitemaps.proposals.fetch(:scopes, [:published, :not_hidden, :not_withdrawn])
           end
         end
+
+        if Decidim.module_installed?(:debates)
+          Decidim::Sitemaps.register_component(:debates) do |component|
+            component.model_class_name = "Decidim::Debates::Debate"
+            component.scopes = Decidim::Sitemaps.debates.fetch(:scopes, [:open, :not_hidden])
+          end
+        end
       end
     end
   end

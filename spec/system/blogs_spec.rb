@@ -18,7 +18,7 @@ describe "BlogsgsSitemaps" do
   before do
     SitemapGenerator::Sitemap.reset!
     clean_sitemap_files_from_rails_app
-    Decidim::Sitemaps.meetings[:enabled] = true
+    Decidim::Sitemaps.blogs[:enabled] = true
   end
 
   context "when resources are not created" do
