@@ -10,3 +10,4 @@ require "decidim/participatory_processes/test/factories" if Decidim.module_insta
 require "decidim/blogs/test/factories" if Decidim.module_installed?(:blogs)
 require "decidim/meetings/test/factories" if Decidim.module_installed?(:meetings)
 require "decidim/proposals/test/factories" if Decidim.module_installed?(:proposals)
+require "decidim/debates/test/factories" if Decidim.module_installed?(:debates)

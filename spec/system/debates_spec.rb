@@ -2,15 +2,15 @@
 
 require "spec_helper"
 
-describe "MeetingsSitemaps" do
+describe "DebatesSitemaps" do
   let(:sitemap_options) { { include_root: false, verbose: false, compress: false, default_host: "https://#{organization.host}" } }
   let(:organization) { create(:organization, create_static_pages: false) }
   let!(:participatory_space) { create(:participatory_process, :published, organization:) }
-  let!(:component) { create(:proposal_component, :published, participatory_space:) }
+  let!(:component) { create(:debates_component, :published, participatory_space:) }
 
   let(:sitemap) do
     SitemapGenerator::Sitemap.create(**sitemap_options) do
-      organization = Decidim::Organization.last
+      organization = Decidim::Organization.first
       Decidim::Sitemaps::Generator.new(organization:, sitemap: self).generate_sitemap
     end
   end
@@ -18,55 +18,50 @@ describe "MeetingsSitemaps" do
   before do
     SitemapGenerator::Sitemap.reset!
     clean_sitemap_files_from_rails_app
-    Decidim::Sitemaps.proposals[:enabled] = true
+    Decidim::Sitemaps.debates[:enabled] = true
   end
 
   context "when resources are not created" do
     it { expect(sitemap.link_count).to eq(1) }
   end
 
-  context "when the resource is created but not published" do
-    let!(:resource) { create(:proposal, :unpublished, component:) }
+  context "when the resource is created but closed" do
+    let!(:resource) { create(:debate, :closed, component:) }
 
     it { expect(sitemap.link_count).to eq(1) }
   end
 
-  context "when resource is published" do
-    let!(:resource) { create(:proposal, :published, component:) }
+  context "when resource is open" do
+    let!(:resource) { create(:debate, component:) }
 
     it { expect(sitemap.link_count).to eq(2) }
   end
 
-  context "when resource is published but withdrawn" do
-    let!(:resource) { create(:proposal, :published, :withdrawn, component:) }
-
-    it { expect(sitemap.link_count).to eq(1) }
-  end
-
   context "when resource is published but moderated" do
-    let!(:resource) { create(:proposal, :published, :moderated, component:) }
+    let!(:resource) { create(:debate, component:) }
+    let!(:moderation) { create(:moderation, reportable: resource, hidden_at: 2.days.ago) }
 
     it { expect(sitemap.link_count).to eq(1) }
   end
 
   context "when resource has a custom scope" do
     around do |example|
-      scopes = Decidim::Sitemaps.proposals[:scopes]
-      Decidim::Sitemaps.proposals[:scopes] = [:published, :not_hidden, :not_withdrawn, :accepted]
+      scopes = Decidim::Sitemaps.debates[:scopes]
+      Decidim::Sitemaps.debates[:scopes] = [:closed]
 
       example.run
 
-      Decidim::Sitemaps.proposals[:scopes] = scopes
+      Decidim::Sitemaps.debates[:scopes] = scopes
     end
 
     context "and there is no match" do
-      let!(:resource) { create(:proposal, :published, :rejected, component:) }
+      let!(:resource) { create(:debate, component:) }
 
       it { expect(sitemap.link_count).to eq(1) }
     end
 
     context "and there is a match" do
-      let!(:resource) { create(:proposal, :published, :accepted, component:) }
+      let!(:resource) { create(:debate, :closed, component:) }
 
       it { expect(sitemap.link_count).to eq(2) }
     end

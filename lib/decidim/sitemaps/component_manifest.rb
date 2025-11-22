@@ -16,7 +16,7 @@ module Decidim
       end
 
       def model_class
-        scopes.inject(model_class_name.constantize) { |ar, scope| ar.send(scope) }
+        model_class_name.constantize
       end
     end
   end

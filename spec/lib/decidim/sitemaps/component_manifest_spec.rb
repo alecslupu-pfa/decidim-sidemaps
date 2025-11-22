@@ -36,15 +36,6 @@ module Decidim
 
         it { expect(subject.resource_route(resource, host: organization.host)).to eq("http://#{organization.host}:#{Capybara.server_port}/processes/#{resource.participatory_space.slug}/f/#{resource.component.id}/dummy_resources/#{resource.id}") }
       end
-
-      describe "model_class" do
-        it "receives the scopes" do
-          scopes.each do |scope|
-            expect(manager_class.constantize).to receive(scope)
-            subject.model_class
-          end
-        end
-      end
     end
   end
 end

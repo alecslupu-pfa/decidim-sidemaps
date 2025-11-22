@@ -22,15 +22,6 @@ module Decidim
 
         it { is_expected.to be_invalid }
       end
-
-      describe "model_class" do
-        it "receives the scopes" do
-          scopes.each do |scope|
-            expect(Decidim::ParticipatoryProcess).to receive(scope)
-            subject.model_class
-          end
-        end
-      end
     end
   end
 end

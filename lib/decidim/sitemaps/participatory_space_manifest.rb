@@ -13,7 +13,7 @@ module Decidim
       validates :name, presence: true
 
       def model_class
-        scopes.inject(manifest.model_class_name.constantize) { |ar, scope| ar.send(scope) }
+        manifest.model_class_name.constantize
       end
 
       def resource_route(resource, host:, params: {})
