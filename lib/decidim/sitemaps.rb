@@ -54,6 +54,32 @@ module Decidim
       { enabled: true, changefreq: "daily", priority: 0.5, scopes: [:open, :not_hidden] }
     end
 
+    config_accessor :sortitions do
+      { enabled: false, changefreq: "daily", priority: 0.5, scopes: [:active] }
+    end
+
+    #
+    # config_accessor :pages do
+    #   { enabled: true, changefreq: "daily", priority: 0.5 }
+    # end
+    #
+    # config_accessor :surveys do
+    #   { enabled: false }
+    # end
+    #
+    # config_accessor :budgets do
+    #   { enabled: false, changefreq: "daily", priority: 0.5 }
+    # end
+    #
+    # config_accessor :elections do
+    #   { enabled: false, changefreq: "daily", priority: 0.5 }
+    # end
+
+    #
+    # config_accessor :accountability do
+    #   { enabled: true, changefreq: "daily", priority: 0.5 }
+    # end
+
     def self.register_participatory_space(name, &)
       participatory_space_registry.register(name, &)
     end
