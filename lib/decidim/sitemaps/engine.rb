@@ -60,6 +60,13 @@ module Decidim
             component.scopes = Decidim::Sitemaps.debates.fetch(:scopes, [:open, :not_hidden])
           end
         end
+
+        if Decidim.module_installed?(:sortitions)
+          Decidim::Sitemaps.register_component(:sortitions) do |component|
+            component.model_class_name = "Decidim::Sortitions::Sortition"
+            component.scopes = Decidim::Sitemaps.sortitions.fetch(:scopes, [:active])
+          end
+        end
       end
     end
   end
