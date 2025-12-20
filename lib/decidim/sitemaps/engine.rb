@@ -61,6 +61,13 @@ module Decidim
           end
         end
 
+        if Decidim.module_installed?(:budgets)
+          Decidim::Sitemaps.register_component(:budgets) do |component|
+            component.model_class_name = "Decidim::Budgets::Budget"
+            component.scopes = Decidim::Sitemaps.budgets.fetch(:scopes, [:all])
+          end
+        end
+
         if Decidim.module_installed?(:sortitions)
           Decidim::Sitemaps.register_component(:sortitions) do |component|
             component.model_class_name = "Decidim::Sortitions::Sortition"
