@@ -26,7 +26,7 @@ describe "PagesSitemaps" do
     it { expect(sitemap.link_count).to eq(1) }
   end
 
-  context "when the resource is created but not published" do
+  context "when the component is not published" do
     let!(:component) { create(:component, participatory_space:, published_at: 3.days.from_now, manifest_name: "pages") }
 
     it { expect(sitemap.link_count).to eq(1) }
