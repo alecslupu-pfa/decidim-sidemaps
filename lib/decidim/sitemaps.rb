@@ -66,11 +66,11 @@ module Decidim
     # config_accessor :surveys do
     #   { enabled: false }
     # end
-    #
-    # config_accessor :budgets do
-    #   { enabled: false, changefreq: "daily", priority: 0.5 }
-    # end
-    #
+
+    config_accessor :budgets do
+      { enabled: false, changefreq: "daily", priority: 0.5, scopes: [ :all ] }
+    end
+
     # config_accessor :elections do
     #   { enabled: false, changefreq: "daily", priority: 0.5 }
     # end
