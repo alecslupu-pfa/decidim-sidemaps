@@ -2,11 +2,12 @@
 
 require "spec_helper"
 
-describe "BlogsSitemaps" do
+describe "PagesSitemaps" do
   let(:sitemap_options) { { include_root: false, verbose: false, compress: false, default_host: "https://#{organization.host}" } }
   let(:organization) { create(:organization, create_static_pages: false) }
   let!(:participatory_space) { create(:participatory_process, :published, organization:) }
-  let!(:component) { create(:post_component, :published, participatory_space:) }
+
+  let!(:component) { create(:component, :published, participatory_space:, manifest_name: "pages") }
 
   let(:sitemap) do
     SitemapGenerator::Sitemap.create(**sitemap_options) do
@@ -18,7 +19,7 @@ describe "BlogsSitemaps" do
   before do
     SitemapGenerator::Sitemap.reset!
     clean_sitemap_files_from_rails_app
-    Decidim::Sitemaps.blogs[:enabled] = true
+    Decidim::Sitemaps.pages[:enabled] = true
   end
 
   context "when resources are not created" do
@@ -26,13 +27,13 @@ describe "BlogsSitemaps" do
   end
 
   context "when the resource is created but not published" do
-    let!(:resource) { create(:post, published_at: 3.hours.from_now, component:) }
+    let!(:component) { create(:component, participatory_space:, published_at: 3.days.from_now, manifest_name: "pages") }
 
     it { expect(sitemap.link_count).to eq(1) }
   end
 
   context "when resource is published" do
-    let!(:resource) { create(:post, published_at: 2.days.ago, component:) }
+    let!(:resource) { create(:page, component:) }
 
     it { expect(sitemap.link_count).to eq(2) }
   end

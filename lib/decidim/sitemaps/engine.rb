@@ -67,6 +67,13 @@ module Decidim
             component.scopes = Decidim::Sitemaps.sortitions.fetch(:scopes, [:active])
           end
         end
+
+        if Decidim.module_installed?(:pages)
+          Decidim::Sitemaps.register_component(:pages) do |component|
+            component.model_class_name = "Decidim::Pages::Page"
+            component.scopes = Decidim::Sitemaps.pages.fetch(:scopes, [:all])
+          end
+        end
       end
     end
   end
