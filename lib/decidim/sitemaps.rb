@@ -58,11 +58,10 @@ module Decidim
       { enabled: false, changefreq: "daily", priority: 0.5, scopes: [:active] }
     end
 
-    #
-    # config_accessor :pages do
-    #   { enabled: true, changefreq: "daily", priority: 0.5 }
-    # end
-    #
+    config_accessor :pages do
+      { enabled: true, changefreq: "daily", priority: 0.5, scopes: [:all] }
+    end
+
     # config_accessor :surveys do
     #   { enabled: false }
     # end
